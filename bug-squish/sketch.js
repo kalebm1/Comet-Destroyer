@@ -1,9 +1,14 @@
 //Kaleb Morgan
 //CSC 2463
 //Final Project - Comet Smash
+var click = false;
 
 var starCount = 150;
 var stars = [];
+var starSpeed = 10;
+
+var score = 0;
+var gameState = 1;  
 
 var comets = [];
 var cometCount = 10;
@@ -16,6 +21,8 @@ var lasersCount = 0;
 var ghostTime = 0;
 var justHit = false;
 var explosionWait = 0;
+var spaceimage;
+var myFont;
 
 function setup() {
   createCanvas(1080, 520);
@@ -23,14 +30,16 @@ function setup() {
 }
 
 function preload() {
+  normalFont = loadFont('fonts/8bitOperatorPlus8-Regular.ttf');
+  titleFont = loadFont('fonts/Blox2.ttf');
   for (var i = 0; i < starCount; i++) {
     stars[i] = new Star(random(1080-1),random(520-1));
   }
-  playerShip = new Ship("spaceShipSprites.png",200,260,"red");
 
   for(var j = 0; j<cometCount;j++){
     comets[j] = new Comet("cometInfoSprites.png",round(random(1200,1900)),round(random(520-1)),false,false,j);
   }
+  spaceimage = loadImage("spaceShipSprites.png");
 
 }
 
@@ -51,13 +60,73 @@ function draw() {
     stars[i].draw();
   }
   
+  if(gameState==1){
+    starSpeed = 2;
+    fill(255);
+    textFont(titleFont);
+    textSize(90);
+    text("Comet Destroyer", 200,200);
+    textFont(normalFont);
+    textSize(25);
+    text("Select your destroyer to play!",325,235);
+    //playerShip = new Ship("spaceShipSprites.png",200,260,"red");
+    image(spaceimage,340,290,80,80,240,0,80,80);
+    image(spaceimage,430,290,80,80,160,0,80,80);
+    image(spaceimage,520,290,80,80,80,0,80,80);
+    image(spaceimage,610,290,80,80,0,0,80,80);
 
-  for(j=0;j<cometCount;j++){
-    comets[j].draw();
+    //red ship
+    if(mouseX>=300&&mouseX<=380&&mouseY>=250&&mouseY<=330&&click==true){
+      playerShip = new Ship(spaceimage,200,260,"red");
+      gameState = 2;
+    }
+    //blue ship
+    else if(mouseX>=390&&mouseX<=470&&mouseY>=250&&mouseY<=330&&click==true){
+      playerShip = new Ship(spaceimage,200,260,"blue");
+      gameState = 2;
+    }
+    //purple ship
+    else if(mouseX>=480&&mouseX<=560&&mouseY>=250&&mouseY<=330&&click==true){
+      playerShip = new Ship(spaceimage,200,260,"purple");
+      gameState = 2;
+    }
+    //yellow ship
+    else if(mouseX>=570&&mouseX<=650&&mouseY>=250&&mouseY<=330&&click==true){
+      playerShip = new Ship(spaceimage,200,260,"yellow");
+      gameState = 2;
+    }
+
   }
-  playerShip.draw();
+  else if(gameState==2){
+    starSpeed = 10;
+    for(j=0;j<cometCount;j++){
+      comets[j].draw();
+    }
+    playerShip.draw();
+  
+    fill(255);
+    textFont(normalFont);
+    textSize(30);
+    text("SCORE: "+score,920,50);
+  
+    if(score==35){
+      cometSpeed=5;
+      starSpeed=12;
+    }
+  }
+  else if(gameState==3){
+    starSpeed = 2;
+    fill(255);
+    textFont(titleFont);
+    textSize(90);
+    text("GAME OVER", 240,200);
+    textFont(normalFont);
+    textSize(25);
+    text("YOUR SCORE WAS: "+score,325,235);
+    text("REFRESH TO PLAY AGAIN",325,335);
+  }
 
-
+  clicked();
 }
 
 function keyPressed(){
@@ -114,7 +183,7 @@ function Star(x, y) {
     this.x = 1080;
     this.y = random(520-1);
   }
-  this.x = this.x-10;
+  this.x = this.x-starSpeed;
   rect(this.x,this.y,5,5);
  };
 }
@@ -133,10 +202,18 @@ function Comet(imageName, x, y, isSuper,isHeart,index){
 
   this.draw = function(){
     if(this.isSuper&&!this.exploded){
-
+      push();
+      translate(this.x,this.y);
+      this.x = this.x-cometSpeed;
+      image(this.spritesheet,0,0,160,80,240,0,160,80);
+      pop();
     }
     else if(this.isHeart&&!this.exploded){
-
+      push();
+      translate(this.x,this.y);
+      this.x = this.x-cometSpeed;
+      image(this.spritesheet,0,0,80,80,80,0,80,80);
+      pop();
     }else if(!this.exploded){
       push();
       translate(this.x,this.y);
@@ -159,7 +236,15 @@ function Comet(imageName, x, y, isSuper,isHeart,index){
 
     if(this.x<-30){
       console.log("restart");
-      comets[this.index] = new Comet("cometInfoSprites.png",round(random(1500,1800)),round(random(520-1)),false,false,this.index);
+      let randomVal = round(random(1,1000));
+      if(randomVal<800){
+        comets[this.index] = new Comet("cometInfoSprites.png",round(random(1500,1800)),round(random(520-1)),false,false,this.index);
+      }else if(randomVal>799&&randomVal<950){
+        comets[this.index] = new Comet("cometInfoSprites.png",round(random(1500,1800)),round(random(520-1)),true,false,this.index);
+      }else{
+        comets[this.index] = new Comet("cometInfoSprites.png",round(random(1500,1800)),round(random(520-1)),false,true,this.index);
+      }
+      
     }
   }
 
@@ -173,6 +258,14 @@ function Comet(imageName, x, y, isSuper,isHeart,index){
   this.makeDie = function(){
     this.exploded = true;
   }
+
+  this.getHealth = function(){
+    return this.isHeart;
+  }
+
+  this.getSuper = function(){
+    return this.isSuper;
+  }
 }
 
 function Ship(imageName, x, y, color){
@@ -180,7 +273,8 @@ function Ship(imageName, x, y, color){
   this.y = y;
   this.color = color;
   this.health = 100;
-  this.spritesheet = loadImage(imageName);
+  // this.spritesheet = loadImage(imageName);
+  this.spritesheet = imageName;
   this.healthsprite = loadImage("healthBarSprites.png");
   this.xMove = 0;
   this.yMove = 0;
@@ -212,6 +306,7 @@ function Ship(imageName, x, y, color){
   }else{
     console.log("DEAD");
     image(this.laser,0,0,80,80,160,0,80,80)
+    gameState=3;
   }
 
 
@@ -267,24 +362,36 @@ function Ship(imageName, x, y, color){
 
   this.drawHealthBar = function(){
     // translate(30,60);
+    // if(this.health==100){
+    //   image(this.healthsprite,940,480,300,80,320,0,240,80);
+    // }
+    // else if(this.health==80){
+    //   image(this.healthsprite,940,480,300,80,160,0,240,80);
+    // }
+    // else if(this.health==60){
+    //   image(this.healthsprite,940,480,300,80,160,0,240,80);
+    // }
+    // else if(this.health==40){
+    //   image(this.healthsprite,940,480,300,80,0,0,240,80);
+    // }
+    // else if(this.health==20){
+    //   image(this.healthsprite,940,480,300,80,320,0,240,80);
+    // }
+    // else if(this.health==0){
+    //   image(this.healthsprite,940,480,300,80,320,0,240,80);
+    // }
     if(this.health==100){
-      image(this.healthsprite,940,480,300,80,320,0,240,80);
+      fill(126,200,80);
+    }else if(this.health==80||this.health==60){
+      fill(255,211,0);
+    }else if(this.health==40||this.health==20){
+      fill(153,0,0);
+    }else if(this.health==0){
+
     }
-    else if(this.health==80){
-      image(this.healthsprite,940,480,300,80,320,0,240,80);
-    }
-    else if(this.health==60){
-      image(this.healthsprite,940,480,300,80,320,0,240,80);
-    }
-    else if(this.health==40){
-      image(this.healthsprite,940,480,300,80,320,0,240,80);
-    }
-    else if(this.health==20){
-      image(this.healthsprite,940,480,300,80,320,0,240,80);
-    }
-    else if(this.health==0){
-      image(this.healthsprite,940,480,300,80,320,0,240,80);
-    }
+    textFont(normalFont);
+    textSize(30);
+    text("Health: "+this.health, 900,500);
   }
   this.drawLaser = function(){
     for(j = 0;j<lasersCount;j++){
@@ -325,12 +432,23 @@ function Ship(imageName, x, y, color){
         //   this.health=this.health-20;
         // }
         if(this.x<cx+20&&this.x+40>cx&&this.y<cy+20&&this.y+20>cy){
-          console.log(this.health);
-          if(this.health>0){
-            this.health=this.health-20;
+          console.log(comets[c].getHealth());
+          if(comets[c].getHealth()){
+            //check health
+            if(this.health<100){
+              this.health+=20;
+            }
+          }else if(comets[c].getSuper()){
+            //is super comet
+            this.health = 0;
+          }else{
+            console.log(this.health);
+            if(this.health>0){
+              this.health=this.health-20;
+            }
+            justHit = true;
+            ghostTime = second();
           }
-          justHit = true;
-          ghostTime = second();
         }
       }
     }
@@ -368,8 +486,8 @@ function Laser(x,y){
         comets[c].makeDie();
         explosionWait = second();
         this.hit=true;
+        score++;
       }
     }
   }
 }
-
