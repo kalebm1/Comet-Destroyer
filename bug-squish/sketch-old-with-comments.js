@@ -1,52 +1,28 @@
 //Kaleb Morgan
 //CSC 2463
-//Final Project - Comet Destroyer
-//variable to keep track if clicked or not(Keyboard Mouse Version)
+//Final Project - Comet Smash
 var click = false;
 
-//Star Variables
-//how many stars to draw
 var starCount = 150;
-//variable to keep track of star objects
 var stars = [];
-//variable to control speed of stars
 var starSpeed = 10;
 
-//Game variables
-//variable for score
 var score = 0;
-//variable for game state(Game Screens)
 var gameState = 1;  
 
-//Comet Variables
-//variable to hold comet objects
 var comets = [];
-//variable to keep track of the amount of comets to spawn.
 var cometCount = 10;
-//variable to control the speed of the comets.
 var cometSpeed = 3;
-
-//variable to hold the player's destroyer object.
 var playerShip;
 
-//Laser Variables.
-//variable to hold all laser objects.
 var lasers = [];
-//variable to hold the amount of lasers on screen.
 var lasersCount = 0;
 
-//MISC Variables
-//variable to hold time after player is hit by comet
 var ghostTime = 0;
-//boolean variable to hold if player was recently hit by comet
 var justHit = false;
-//boolean to keep exploded comets on screen for a brief second.
 var explosionWait = 0;
-//variable to hold loaded space ship spritesheet
 var spaceimage;
-//variables to hold loaded fonts.
 var normalFont,titleFont;
-//variables to hold the image for misc icons.
 var extrasImage;
 
 function setup() {
@@ -55,15 +31,12 @@ function setup() {
 }
 
 function preload() {
-  //load normal font
   normalFont = loadFont('fonts/8bitOperatorPlus8-Regular.ttf');
-  //load cool title font
   titleFont = loadFont('fonts/Blox2.ttf');
-  //populate the stars in the star array
   for (var i = 0; i < starCount; i++) {
     stars[i] = new Star(random(1080-1),random(520-1));
   }
-  //populate the comets in the comet array
+
   for(var j = 0; j<cometCount;j++){
     comets[j] = new Comet("cometInfoSprites.png",round(random(1200,1900)),round(random(520-1)),false,false,j);
   }
@@ -72,7 +45,6 @@ function preload() {
 
 }
 
-//if mouse is pressed, return true.
 function clicked() {
   if (mouseIsPressed) {
     click = true;
@@ -89,7 +61,7 @@ function draw() {
   for(i = 0; i<starCount;i++){
     stars[i].draw();
   }
-  //WELCOME SCREEN-------------------------------
+  
   if(gameState==1){
     starSpeed = 2;
     fill(255);
@@ -99,12 +71,11 @@ function draw() {
     textFont(normalFont);
     textSize(25);
     text("Select your destroyer to play!",325,235);
-    //select spaceship images
+    //playerShip = new Ship("spaceShipSprites.png",200,260,"red");
     image(spaceimage,340,290,80,80,240,0,80,80);
     image(spaceimage,430,290,80,80,160,0,80,80);
     image(spaceimage,520,290,80,80,80,0,80,80);
     image(spaceimage,610,290,80,80,0,0,80,80);
-    //info image
     image(extrasImage, 50,460,80,80,80,0,80,80);
 
     //red ship
@@ -133,8 +104,6 @@ function draw() {
     }
 
   }
-
-  //GAME SCREEN -------------------------------------------------
   else if(gameState==2){
     starSpeed = 10;
     for(j=0;j<cometCount;j++){
@@ -152,8 +121,6 @@ function draw() {
       starSpeed=12;
     }
   }
-
-  //GAME OVER SCREEN ----------------------------------------
   else if(gameState==3){
     starSpeed = 2;
     fill(255);
@@ -165,8 +132,6 @@ function draw() {
     text("YOUR SCORE WAS: "+score,325,235);
     text("REFRESH TO PLAY AGAIN",325,335);
   }
-
-  //GAME INFORMATION SCREEN ---------------------------------
   else if(gameState==4){
     textFont(titleFont);
     textSize(90);
@@ -188,7 +153,6 @@ function draw() {
   clicked();
 }
 
-//function to test game with keyboard and mouse.
 function keyPressed(){
   //38 - up
   //40 - down
@@ -213,7 +177,6 @@ function keyPressed(){
   }
 }
 
-//function to test game with keyboard and mouse.
 function keyReleased(){
   //38 - up
   //40 - down
@@ -235,7 +198,6 @@ function keyReleased(){
   }
 }
 
-//STAR CLASS -----------------------
 function Star(x, y) {
  this.x = x;
  this.y = y;
@@ -250,7 +212,7 @@ function Star(x, y) {
  };
 }
 
-//COMET CLASS ------------------------
+
 function Comet(imageName, x, y, isSuper,isHeart,index){
   //this is going to be the code for the comet.
   this.x = x;
@@ -330,12 +292,12 @@ function Comet(imageName, x, y, isSuper,isHeart,index){
   }
 }
 
-//PLAYER SHIP CLASS ----------------------
 function Ship(imageName, x, y, color){
   this.x = x;
   this.y = y;
   this.color = color;
   this.health = 100;
+  // this.spritesheet = loadImage(imageName);
   this.spritesheet = imageName;
   this.healthsprite = loadImage("healthBarSprites.png");
   this.xMove = 0;
@@ -344,6 +306,9 @@ function Ship(imageName, x, y, color){
   this.laserShot = false;
 
   this.draw = function(){
+    //draw health bar;
+    //draw ship;
+    //draw laser;
     this.drawLaser();
     push();
     translate(this.x,this.y);
@@ -420,6 +385,25 @@ function Ship(imageName, x, y, color){
   }
 
   this.drawHealthBar = function(){
+    // translate(30,60);
+    // if(this.health==100){
+    //   image(this.healthsprite,940,480,300,80,320,0,240,80);
+    // }
+    // else if(this.health==80){
+    //   image(this.healthsprite,940,480,300,80,160,0,240,80);
+    // }
+    // else if(this.health==60){
+    //   image(this.healthsprite,940,480,300,80,160,0,240,80);
+    // }
+    // else if(this.health==40){
+    //   image(this.healthsprite,940,480,300,80,0,0,240,80);
+    // }
+    // else if(this.health==20){
+    //   image(this.healthsprite,940,480,300,80,320,0,240,80);
+    // }
+    // else if(this.health==0){
+    //   image(this.healthsprite,940,480,300,80,320,0,240,80);
+    // }
     if(this.health==100){
       fill(126,200,80);
     }else if(this.health==80||this.health==60){
@@ -445,11 +429,32 @@ function Ship(imageName, x, y, color){
     if(timeRemaining==0 && justHit){
       justHit = false;
       ghostTime = 0;
+      // for(var c = 0;c<cometCount;c++){
+      //   let cx = round(comets[c].getX());
+      //   let cy = round(comets[c].getY());
+      //   // if(cx == this.x+40&&cy==this.y){
+      //   //   console.log(this.health);
+      //   //   this.health=this.health-20;
+      //   // }
+      //   if(this.x<cx+20&&this.x+40>cx&&this.y<cy+20&&this.y+20>cy){
+      //     console.log(this.health);
+      //     if(this.health>0){
+      //       this.health=this.health-20;
+      //     }
+          
+      //     justHit = true;
+      //     ghostTime = second();
+      //   }
+      // }
     }
     if(!justHit){
       for(var c = 0;c<cometCount;c++){
         let cx = round(comets[c].getX());
         let cy = round(comets[c].getY());
+        // if(cx == this.x+40&&cy==this.y){
+        //   console.log(this.health);
+        //   this.health=this.health-20;
+        // }
         if((this.x<cx+40&&this.x+40>cx&&this.y<cy+40&&this.y+40>cy)||(this.x<cx-40&&this.x-40>cx&&this.y<cy-20&&this.y-40>cy)){
           console.log(comets[c].getHealth());
           if(comets[c].getHealth()){
@@ -474,7 +479,7 @@ function Ship(imageName, x, y, color){
   }
 }
 
-//LASER CLASS -------------------------
+
 function Laser(x,y){
   this.x = x;
   this.y = y;
@@ -497,6 +502,10 @@ function Laser(x,y){
     for(var c = 0;c<cometCount;c++){
       let cx = round(comets[c].getX());
       let cy = round(comets[c].getY());
+      // if(cx == this.x+40&&cy==this.y){
+      //   console.log(this.health);
+      //   this.health=this.health-20;
+      // }
       if((this.x<cx+20&&this.x+40>cx&&this.y<cy+40&&this.y+20>cy)||(this.x<cx-40&&this.x-10>cx&&this.y<cy-50&&this.y-20>cy)){
         comets[c].makeDie();
         explosionWait = second();
