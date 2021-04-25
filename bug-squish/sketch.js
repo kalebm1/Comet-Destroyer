@@ -49,9 +49,37 @@ var normalFont,titleFont;
 //variables to hold the image for misc icons.
 var extrasImage;
 
+//variables for input serial data
+var inData,serial,latestData,outNum,lastInputData;
+var shipSelected=0;
+var oldData;
+
 function setup() {
   createCanvas(1080, 520);
   imageMode(CENTER);
+
+  //Serial Code
+  //Serial control code:
+  serial = new p5.SerialPort();
+
+  serial.list();
+  serial.open("COM3");
+
+  serial.on("connected", serverConnected);
+
+  serial.on("list", gotList);
+
+  serial.on("data", gotData);
+
+  serial.on("error", gotError);
+
+  serial.on("open", gotOpen);
+
+  serial.on("close", gotClose);
+
+
+  //MUSIC CODE
+  //
 }
 
 function preload() {
@@ -132,6 +160,87 @@ function draw() {
       gameState = 4;
     }
 
+    if(shipSelected==0){
+      noFill();
+      strokeWeight(4);
+      stroke(255);
+      rect(303,250,80,75);
+      noStroke();
+      fill(255);
+    }else if(shipSelected==1){
+      noFill();
+      strokeWeight(4);
+      stroke(255);
+      rect(393,250,80,75);
+      noStroke();
+      fill(255);
+
+    }else if(shipSelected==2){
+      noFill();
+      strokeWeight(4);
+      stroke(255);
+      rect(483,250,80,75);
+      noStroke();
+      fill(255);
+      
+    }else if(shipSelected==3){
+      noFill();
+      strokeWeight(4);
+      stroke(255);
+      rect(573,250,80,75);
+      noStroke();
+      fill(255);
+
+    }else if(shipSelected==-1){
+      noFill();
+      strokeWeight(4);
+      stroke(255);
+      rect(9,420,80,75);
+      noStroke();
+      fill(255);
+
+    }
+
+    if(inData=="right"&&shipSelected<3&&inData!=oldData){
+      oldData = "right";
+      shipSelected++;
+    }else if(inData=="left"&&shipSelected>0&&inData!=oldData){
+      oldData = "left";
+      shipSelected--;
+    }else if(inData=="down"&&inData!=oldData){
+      oldData="down";
+      shipSelected = -1;
+    }else if(inData=="up"&&inData!=oldData){
+      oldData="up";
+      shipSelected = 0;
+    }else if(inData!="left"&&inData!="right"){
+      oldData=inData;
+    }
+
+    if(inData=="pressed"){
+      if(shipSelected==0){
+        playerShip = new Ship(spaceimage,200,260,"red");
+        gameState = 2;
+      }
+      else if(shipSelected==1){
+        playerShip = new Ship(spaceimage,200,260,"blue");
+        gameState = 2;
+      }
+      else if(shipSelected==2){
+        playerShip = new Ship(spaceimage,200,260,"purple");
+        gameState = 2;
+      }
+      else if(shipSelected==3){
+        playerShip = new Ship(spaceimage,200,260,"yellow");
+        gameState = 2;
+      }
+      else if(shipSelected==-1){
+        gameState=4;
+      }
+    }
+
+    // console.log(inData);
+
   }
 
   //GAME SCREEN -------------------------------------------------
@@ -150,6 +259,39 @@ function draw() {
     if(score==35){
       cometSpeed=5;
       starSpeed=12;
+    }
+
+    //MOVEMENT CODE FOR ARDUINO
+    if(inData == "right"){
+      oldData="right";
+      playerShip.move("right");
+    }
+    if(inData == "left"){
+      oldData="left";
+      playerShip.move("left");
+    }
+    if(inData == "up"){
+      oldData="up";
+      playerShip.move("up");
+    }
+    if(inData == "down"){
+      oldData="down";
+      playerShip.move("down");
+    }
+    if(inData=="pressed"){
+      oldData="pressed";
+      playerShip.shoot();
+    }
+    if(inData=="center"&&oldData!=inData){
+      if(oldData=="right"){
+        playerShip.stop("x");
+      }else if(oldData=="left"){
+        playerShip.stop("x");
+      }else if(oldData=="up"){
+        playerShip.stop("y");
+      }else if(oldData=="down"){
+        playerShip.stop("y");
+      }
     }
   }
 
@@ -182,6 +324,9 @@ function draw() {
     image(extrasImage, 50,50,80,80,160,0,80,80);
     if(mouseX>=10&&mouseX<=90&&mouseY>=10&&mouseY<=90&&click==true){
       gameState = 1;
+    }
+    if(inData=="pressed"){
+      gameState=1;
     }
   }
 
@@ -506,3 +651,56 @@ function Laser(x,y){
     }
   }
 }
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+//New Serial Methods for Arduino Serial Ports:
+
+ //New Serial Methods:
+ function serverConnected() {
+  print("Connected to Server");
+}
+  
+function gotList(thelist) {
+  print("List of Serial Ports:");
+  
+  for (let i = 0; i < thelist.length; i++) {
+    print(i + " " + thelist[i]);
+  }
+}
+  
+function gotOpen() {
+  print("Serial Port is Open");
+}
+  
+function gotClose() {
+  print("Serial Port is Closed");
+  latestData = "Serial Port is Closed";
+}
+  
+function gotError(theerror) {
+  print(theerror);
+}
+  
+function gotData() {
+  // inData = int(serial.readLine());
+
+
+
+  let currentString = serial.readLine();
+  trim(currentString);
+  if (!currentString) return;
+  // console.log(currentString);
+  inData =currentString;
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
