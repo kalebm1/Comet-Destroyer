@@ -54,6 +54,11 @@ var inData,serial,latestData,outNum,lastInputData;
 var shipSelected=0;
 var oldData;
 
+//Variables to hold music info
+var introMusic, winMusic,synth1,synth2, loseMusic;
+
+
+
 function setup() {
   createCanvas(1080, 520);
   imageMode(CENTER);
@@ -200,13 +205,26 @@ function draw() {
       fill(255);
 
     }
+    if((mouseX>=303&&mouseX<=(303+80)&&mouseY>=250&&mouseY<=(250+75))){
+      shipSelected=0;
+    }
+    else if((mouseX>=393&&mouseX<=(393+80)&&mouseY>=250&&mouseY<=(250+75))){
+      shipSelected=1;
+    }
+    else if((mouseX>=483&&mouseX<=(483+80)&&mouseY>=250&&mouseY<=(250+75))){
+      shipSelected=2;
+    }
+    else if((mouseX>=573&&mouseX<=(573+80)&&mouseY>=250&&mouseY<=(250+75))){
+      shipSelected=3;
+    }
 
-    if(inData=="right"&&shipSelected<3&&inData!=oldData){
+    if((inData=="right"&&shipSelected<3&&inData!=oldData)){
       oldData = "right";
       shipSelected++;
-    }else if(inData=="left"&&shipSelected>0&&inData!=oldData){
-      oldData = "left";
-      shipSelected--;
+      
+    }else if((inData=="left"&&shipSelected>0&&inData!=oldData)){
+        oldData = "left";
+        shipSelected--;
     }else if(inData=="down"&&inData!=oldData){
       oldData="down";
       shipSelected = -1;
@@ -704,3 +722,54 @@ function gotData() {
 
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//MUSIC CODE-----------------------------------------------------------------------
+//---------------------------------------------------------------------------------
+function make_poly() {
+	// create synth
+	let instrument = new Tone.PolySynth(Tone.FMSynth, 3);
+	let synthJSON = {
+	  harmonicity: 5,
+	  modulationIndex: 10,
+	  oscillator: {
+		type: "sine",
+	  },
+	  envelope: {
+		attack: 0.001,
+		decay: 2,
+		sustain: 0.1,
+		release: 2,
+	  },
+	  modulation: {
+		type: "square",
+	  },
+	  modulationEnvelope: {
+		attack: 0.002,
+		decay: 0.2,
+		sustain: 0,
+		release: 0.2,
+	  },
+	};
+  
+	instrument.set(synthJSON);
+  
+	let effect1, effect2, effect3;
+  
+	// make connections
+	instrument.connect(Tone.Destination);
+  
+	// define deep dispose function
+	function deep_dispose() {
+	  if (instrument != undefined && instrument != null) {
+		instrument.dispose();
+		instrument = null;
+	  }
+	}
+  
+	return {
+	  instrument: instrument,
+	  deep_dispose: deep_dispose,
+	};
+  }
