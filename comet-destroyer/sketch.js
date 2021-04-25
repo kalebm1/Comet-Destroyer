@@ -84,7 +84,39 @@ function setup() {
 
 
   //MUSIC CODE
-  //
+  //------------------------------------------
+  //INSTRUMENT CODE!!!!:
+  synth = make_poly().instrument;
+
+  //music for intro
+  introMusic = [
+	{time: "0:0", note: ["B3","D4","F#4"]},
+	{time: "0:1:2", note: ["G4","B3","D4"]},
+	{time: "1:0", note: ["A3","C#4","E4"]},
+	{time: "1:1:2", note: ["G4","B3","D4"]},
+	{time: "2:0", note: ["D4"]},
+	{time: "2:2", note: ["C4"]},
+	{time: "3:0", note: ["B3"]},
+	{time: "3:1", note: ["G3"]},
+	  
+  ];
+
+  //Part for the intro Song
+  intro = new Tone.Part((time, chord) => {
+    synth.triggerAttackRelease(chord.note, "8n", time);
+  }, introMusic);
+
+   //Start the transport
+   Tone.Transport.start();
+   //set the BPM at 200
+   Tone.Transport.bpm.value = 200;
+
+    //loop the music
+  intro.loop = true;
+  intro.loopEnd = "4m";
+  intro.autostart = true;
+  //Start the intro music
+  intro.start();
 }
 
 function preload() {
@@ -731,27 +763,42 @@ function make_poly() {
 	// create synth
 	let instrument = new Tone.PolySynth(Tone.FMSynth, 3);
 	let synthJSON = {
-	  harmonicity: 5,
-	  modulationIndex: 10,
-	  oscillator: {
-		type: "sine",
-	  },
-	  envelope: {
-		attack: 0.001,
-		decay: 2,
-		sustain: 0.1,
-		release: 2,
-	  },
-	  modulation: {
-		type: "square",
-	  },
-	  modulationEnvelope: {
-		attack: 0.002,
-		decay: 0.2,
-		sustain: 0,
-		release: 0.2,
-	  },
-	};
+    "volume": 0,
+    "detune": 0,
+    "portamento": 0,
+    "harmonicity": 3,
+    "oscillator": {
+      "partialCount": 0,
+      "partials": [],
+      "phase": 0,
+      "type": "sine"
+    },
+    "envelope": {
+      "attack": 0.01,
+      "attackCurve": "linear",
+      "decay": 0.2,
+      "decayCurve": "exponential",
+      "release": 0.5,
+      "releaseCurve": "exponential",
+      "sustain": 1
+    },
+    "modulation": {
+      "partialCount": 0,
+      "partials": [],
+      "phase": 0,
+      "type": "square"
+    },
+    "modulationEnvelope": {
+      "attack": 0.2,
+      "attackCurve": "linear",
+      "decay": 0.01,
+      "decayCurve": "exponential",
+      "release": 0.5,
+      "releaseCurve": "exponential",
+      "sustain": 1
+    },
+    "modulationIndex": 12.22
+  };
   
 	instrument.set(synthJSON);
   
