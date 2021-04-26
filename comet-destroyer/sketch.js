@@ -824,6 +824,7 @@ function Ship(imageName, x, y, color) {
           if (comets[c].getHealth()) {
             //check health
             if (this.health < 100) {
+              multiplayer.player("health").start();
               this.health += 20;
             }
           } else if (comets[c].getSuper()) {
