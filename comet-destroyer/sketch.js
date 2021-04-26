@@ -598,35 +598,52 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
   this.exploded = false;
   this.timeRemaining = 0;
   this.explosionSound = false;
+  this.caught = false;
 
   this.draw = function () {
     if (this.isSuper && !this.exploded) {
-      push();
-      translate(this.x, this.y);
-      this.x = this.x - cometSpeed;
-      image(this.spritesheet, 0, 0, 160, 80, 240, 0, 160, 80);
-      pop();
-    } else if (this.isHeart && !this.exploded) {
-      push();
-      translate(this.x, this.y);
-      this.x = this.x - cometSpeed;
-      image(this.spritesheet, 0, 0, 80, 80, 80, 0, 80, 80);
-      pop();
-    } else if (!this.exploded) {
-      push();
-      translate(this.x, this.y);
-      this.x = this.x - cometSpeed;
-      image(this.spritesheet, 0, 0, 80, 80, 400, 0, 80, 80);
-      pop();
+        push();
+        translate(this.x, this.y);
+        this.x = this.x - cometSpeed;
+        image(this.spritesheet, 0, 0, 160, 80, 240, 0, 160, 80);
+        pop();
+    } else if (this.isHeart && !this.exploded&&!this.caught) {
+        push();
+        translate(this.x, this.y);
+        this.x = this.x - cometSpeed;
+        image(this.spritesheet, 0, 0, 80, 80, 80, 0, 80, 80);
+        pop();
+    } else if (!this.exploded&&!this.isHeart) {
+        push();
+        translate(this.x, this.y);
+        this.x = this.x - cometSpeed;
+        image(this.spritesheet, 0, 0, 80, 80, 400, 0, 80, 80);
+        pop();
     } else if (this.exploded) {
-      if(!this.explosionSound){
-        multiplayer.player("explosion").start();
-        this.explosionSound = true;
-      }
-      s = second();
-      this.timeRemaining = abs(1 - abs(explosionWait - s));
+        if(!this.explosionSound){
+          multiplayer.player("explosion").start();
+          this.explosionSound = true;
+        }
+        s = second();
+        this.timeRemaining = abs(1 - abs(explosionWait - s));
 
-      if (this.timeRemaining == 0) {
+        if (this.timeRemaining == 0) {
+          comets[this.index] = new Comet(
+            "cometInfoSprites.png",
+            round(random(windowWidth + 500, windowWidth + 800)),
+            round(random(windowHeight - 1)),
+            false,
+            false,
+            this.index
+          );
+
+        } else if(!this.isHeart) {
+            push();
+            translate(this.x, this.y);
+            image(this.spritesheet, 0, 0, 80, 80, 160, 0, 80, 80);
+            pop();
+        }
+    } else if(this.isHeart && this.isCaught){
         comets[this.index] = new Comet(
           "cometInfoSprites.png",
           round(random(windowWidth + 500, windowWidth + 800)),
@@ -635,13 +652,6 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
           false,
           this.index
         );
-
-      } else {
-        push();
-        translate(this.x, this.y);
-        image(this.spritesheet, 0, 0, 80, 80, 160, 0, 80, 80);
-        pop();
-      }
     }
 
     if (this.x < -30) {
@@ -695,6 +705,18 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
 
   this.getSuper = function () {
     return this.isSuper;
+  };
+
+  this.isExploded = function(){
+    return this.exploded;
+  };
+
+  this.catch = function(){
+    this.caught = true;
+  };
+
+  this.isCaught = function(){
+    return this.caught;
   };
 }
 
@@ -823,9 +845,10 @@ function Ship(imageName, x, y, color) {
           console.log(comets[c].getHealth());
           if (comets[c].getHealth()) {
             //check health
-            if (this.health < 100) {
+            if (this.health < 100&&!(comets[c].isCaught())) {
               multiplayer.player("health").start();
               this.health += 20;
+              comets[c].catch();
             }
           } else if (comets[c].getSuper()) {
             //is super comet
@@ -850,6 +873,7 @@ function Ship(imageName, x, y, color) {
 function Laser(x, y) {
   this.x = x;
   this.y = y;
+  this.v = -1;
   this.laser = loadImage("cometInfoSprites.png");
   this.hit = false;
 
@@ -879,10 +903,13 @@ function Laser(x, y) {
           this.y < cy - 50 &&
           this.y - 20 > cy)
       ) {
-        comets[c].makeDie();
         explosionWait = second();
-        this.hit = true;
-        score++;
+        if(!(comets[c].isExploded())){
+          this.hit = true;
+          score++;
+        }
+        comets[c].makeDie();
+        console.log(this.v);
       }
     }
   };
