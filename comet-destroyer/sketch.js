@@ -55,7 +55,7 @@ var shipSelected = 0;
 var oldData;
 
 //Variables to hold music info
-var introMusic, winMusic, synth1, synth2, loseMusic;
+var introMusic, winMusic, synth1, synth2, loseMusic,multiplayer;
 
 function setup() {
   createCanvas(windowWidth - 10, windowHeight - 10);
@@ -83,18 +83,50 @@ function setup() {
   //MUSIC CODE
   //------------------------------------------
   //INSTRUMENT CODE!!!!:
+  multiplayer = new Tone.Players({
+    explosion: "comet-sounds/explosion.mp3",
+    health: "comet-sounds/health.mp3",
+    laser: "comet-sounds/laser.mp3",
+    shiphit: "comet-sounds/ship-hit.mp3",
+  }).toDestination();
+
+
+
   synth = make_poly().instrument;
+  space_synth = make_space_synth().instrument;
 
   //music for intro
   introMusic = [
-    { time: "0:0", note: ["B3", "D4", "F#4"] },
-    { time: "0:1:2", note: ["G4", "B3", "D4"] },
-    { time: "1:0", note: ["A3", "C#4", "E4"] },
-    { time: "1:1:2", note: ["G4", "B3", "D4"] },
-    { time: "2:0", note: ["D4"] },
-    { time: "2:2", note: ["C4"] },
-    { time: "3:0", note: ["B3"] },
-    { time: "3:1", note: ["G3"] },
+    { time: "0:0", note: ["F#4","D#2","D#3"] },
+    { time: "0:2", note: ["D#4"] },
+    { time: "0:3", note: ["D#2"] },
+    { time: "1:0", note: ["F4"] },
+    { time: "1:2", note: ["F#4"] },
+    { time: "1:2", note: ["D#2"] },
+    { time: "2:0", note: ["G#4","D#2","A#3"]},
+    { time: "2:1", note: ["A#4"]},
+    { time: "2:2", note: ["G#4"]},
+    { time: "3:0", note: ["F#4","G#3"]},
+    { time: "3:2", note: ["F4"]},
+    { time: "4:0", note: ["F#4","D#2","F#3"] },
+    { time: "4:2", note: ["D#4"] },
+    { time: "4:3", note: ["D#2"] },
+    { time: "5:0", note: ["F4"] },
+    { time: "5:2", note: ["F#4"] },
+    { time: "5:2", note: ["D#2"] },
+    { time: "6:0", note: ["G#4","D#2","F3"]},
+    { time: "6:1", note: ["A#4"]},
+    { time: "6:2", note: ["G#4"]},
+    { time: "7:0", note: ["F#4"]},
+    { time: "7:2", note: ["F4"]},
+  ];
+  introAccompain = [
+    { time: "0:0", note: ["D#3"], duration: "1.2m"},
+    { time: "2:0", note: ["A#3"], duration: "1m"},
+    { time: "3:0", note: ["G#3"], duration: "1m"},
+    { time: "4:0", note: ["F#3"], duration: "1.2m" },
+    { time: "6:0", note: ["F3"], duration: "1.2m"},
+
   ];
 
   //Part for the intro Song
@@ -102,17 +134,27 @@ function setup() {
     synth.triggerAttackRelease(chord.note, "8n", time);
   }, introMusic);
 
+  intro2 = new Tone.Part((time, chord) => {
+    space_synth.triggerAttackRelease(chord.note, chord.duration, time);
+  }, introAccompain);
+
   //Start the transport
   Tone.Transport.start();
   //set the BPM at 200
-  Tone.Transport.bpm.value = 200;
+  Tone.Transport.bpm.value = 400;
 
   //loop the music
   intro.loop = true;
-  intro.loopEnd = "4m";
+  intro.loopEnd = "8m";
   intro.autostart = true;
   //Start the intro music
   intro.start();
+   //loop the music
+   intro2.loop = true;
+   intro2.loopEnd = "8m";
+   intro2.autostart = true;
+   //Start the intro music
+   intro2.start();
 }
 
 function preload() {
@@ -382,6 +424,8 @@ function draw() {
 
   //GAME SCREEN -------------------------------------------------
   else if (gameState == 2) {
+    intro.stop();
+    intro2.stop();
     starSpeed = 10;
     for (j = 0; j < cometCount; j++) {
       comets[j].draw();
@@ -553,6 +597,7 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
   this.index = index;
   this.exploded = false;
   this.timeRemaining = 0;
+  this.explosionSound = false;
 
   this.draw = function () {
     if (this.isSuper && !this.exploded) {
@@ -574,6 +619,10 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
       image(this.spritesheet, 0, 0, 80, 80, 400, 0, 80, 80);
       pop();
     } else if (this.exploded) {
+      if(!this.explosionSound){
+        multiplayer.player("explosion").start();
+        this.explosionSound = true;
+      }
       s = second();
       this.timeRemaining = abs(1 - abs(explosionWait - s));
 
@@ -586,6 +635,7 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
           false,
           this.index
         );
+
       } else {
         push();
         translate(this.x, this.y);
@@ -725,6 +775,7 @@ function Ship(imageName, x, y, color) {
   };
 
   this.shoot = function () {
+    multiplayer.player("laser").start();
     lasersCount = lasersCount + 1;
     lasers[lasersCount - 1] = new Laser(this.x, this.y);
   };
@@ -777,10 +828,12 @@ function Ship(imageName, x, y, color) {
             }
           } else if (comets[c].getSuper()) {
             //is super comet
+            multiplayer.player("explosion").start();
             this.health = 0;
           } else {
             console.log(this.health);
             if (this.health > 0) {
+              multiplayer.player("shiphit").start();
               this.health = this.health - 20;
             }
             justHit = true;
@@ -919,6 +972,69 @@ function make_poly() {
       sustain: 1,
     },
     modulationIndex: 12.22,
+  };
+
+  instrument.set(synthJSON);
+
+  let effect1, effect2, effect3;
+
+  // make connections
+  instrument.connect(Tone.Destination);
+
+  // define deep dispose function
+  function deep_dispose() {
+    if (instrument != undefined && instrument != null) {
+      instrument.dispose();
+      instrument = null;
+    }
+  }
+
+  return {
+    instrument: instrument,
+    deep_dispose: deep_dispose,
+  };
+}
+
+
+function make_space_synth(){
+  // create synth
+  let instrument = new Tone.PolySynth(Tone.FMSynth, 3);
+  let synthJSON = {
+    "volume": 0,
+    "detune": 0,
+    "portamento": 0,
+    "harmonicity": 3,
+    "oscillator": {
+      "partialCount": 0,
+      "partials": [],
+      "phase": 0,
+      "type": "sine4"
+    },
+    "envelope": {
+      "attack": 0.01,
+      "attackCurve": "linear",
+      "decay": 0.2,
+      "decayCurve": "exponential",
+      "release": 0.5,
+      "releaseCurve": "exponential",
+      "sustain": 1
+    },
+    "modulation": {
+      "partialCount": 0,
+      "partials": [],
+      "phase": 0,
+      "type": "square"
+    },
+    "modulationEnvelope": {
+      "attack": 0.2,
+      "attackCurve": "linear",
+      "decay": 0.01,
+      "decayCurve": "exponential",
+      "release": 0.5,
+      "releaseCurve": "exponential",
+      "sustain": 1
+    },
+    "modulationIndex": 12.22
   };
 
   instrument.set(synthJSON);
