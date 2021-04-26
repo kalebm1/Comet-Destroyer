@@ -16,6 +16,7 @@ var starSpeed = 10;
 //variable for score
 var score = 0;
 //variable for game state(Game Screens)
+//home screen = 1
 var gameState = 1;
 
 //Comet Variables
@@ -55,11 +56,15 @@ var shipSelected = 0;
 var oldData;
 
 //Variables to hold music info
-var introMusic, winMusic, synth1, synth2, loseMusic,multiplayer;
+var introMusic, winMusic, synth1, synth2, overMusic,multiplayer,gameMusic,gameTime,vol,soundVols,overInstrument;
 
 function setup() {
   createCanvas(windowWidth - 10, windowHeight - 10);
   imageMode(CENTER);
+
+  //volume control
+  vol = new Tone.Volume(-12).toDestination();
+  soundVols = new Tone.Volume(-5).toDestination();
 
   //Serial Code
   //Serial control code:
@@ -88,7 +93,7 @@ function setup() {
     health: "comet-sounds/health.mp3",
     laser: "comet-sounds/laser.mp3",
     shiphit: "comet-sounds/ship-hit.mp3",
-  }).toDestination();
+  }).connect(soundVols);
 
 
 
@@ -128,15 +133,68 @@ function setup() {
     { time: "6:0", note: ["F3"], duration: "1.2m"},
 
   ];
+  gameMusic = [
+    { time: "0:0", note: ["F#3","A#3","D#4"], duration: "8n",vol: 1},
+    { time: "0:1", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "0:3", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "1:0", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "1:2", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "1:3", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "2:1", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "2:2", note: ["F#3","A#3","D#4"], duration: "8n"},
+    { time: "3:0", note: ["F#3","A#3","D#4"], duration: "2n"},
+    { time: "3:1", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "3:2", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "4:0", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "4:1", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "4:3", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "5:0", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "5:1", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "5:3", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "6:0", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "6:1", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "6:3", note: ["F#3","A#3","C#4"], duration: "8n"},
+    { time: "7:0", note: ["F#3","A#3","C#4"], duration: "2n"},
+    { time: "0:0", note: ["F#2"], duration:"4m",volume : 0.1},
+    { time: "4:0", note: ["C#2"], duration:"4m",volume: 0.1},
+    // { time: "2:0", note: ["A#3"]},
+    // { time: "3:0", note: ["G#3"]},
+    // { time: "4:0", note: ["F#3"]},
+    // { time: "6:0", note: ["F3"]},
+  ];
+
+  overMusic= [
+    { time: "0:0", note: ["C#5"], duration: "4n"},
+    { time: "1:2", note: ["F#4"], duration: "8n"},
+    { time: "2:0", note: ["A#4"], duration: "8n"},
+    { time: "3:0", note: ["G#4"], duration: "8n"},
+    { time: "4:0", note: ["C#5"], duration: "4n"},
+    { time: "5:2", note: ["F#4"], duration: "8n"},
+    { time: "6:0", note: ["A#4"], duration: "8n"},
+    { time: "7:0", note: ["G#4"], duration: "8n"},
+    { time: "0:0", note: ["D#2"], duration: "1n."},
+    { time: "1:2", note: ["C#2"], duration: "1n."},
+    { time: "3:0", note: ["C#2"], duration: "1n"},
+    { time: "4:0", note: ["F#2"], duration: "3m"},
+  
+  ];
 
   //Part for the intro Song
   intro = new Tone.Part((time, chord) => {
-    synth.triggerAttackRelease(chord.note, "8n", time);
+    synth.triggerAttackRelease(chord.note, "8n", time,chord.value);
   }, introMusic);
 
   intro2 = new Tone.Part((time, chord) => {
     space_synth.triggerAttackRelease(chord.note, chord.duration, time);
   }, introAccompain);
+
+  gameTime = new Tone.Part((time, chord) => {
+    synth.triggerAttackRelease(chord.note, chord.duration, time);
+  }, gameMusic);
+
+  overInstrument= new Tone.Part((time, chord) => {
+    synth.triggerAttackRelease(chord.note, chord.duration, time);
+  }, overMusic);
 
   //Start the transport
   Tone.Transport.start();
@@ -155,6 +213,13 @@ function setup() {
    intro2.autostart = true;
    //Start the intro music
    intro2.start();
+
+   //game time setup
+   gameTime.loop = true;
+   gameTime.loopEnd = "8m";
+
+   overInstrument.loop = true;
+   overInstrument.loopEnd = "8m";
 }
 
 function preload() {
@@ -426,6 +491,7 @@ function draw() {
   else if (gameState == 2) {
     intro.stop();
     intro2.stop();
+    gameTime.start();
     starSpeed = 10;
     for (j = 0; j < cometCount; j++) {
       comets[j].draw();
@@ -478,6 +544,10 @@ function draw() {
 
   //GAME OVER SCREEN ----------------------------------------
   else if (gameState == 3) {
+    intro.stop();
+    intro2.stop();
+    gameTime.stop();
+    overInstrument.start();
     starSpeed = 2;
     fill(255);
     textFont(titleFont);
@@ -979,7 +1049,7 @@ function make_poly() {
       attack: 0.01,
       attackCurve: "linear",
       decay: 0.2,
-      decayCurve: "exponential",
+      decayCurve: "linear",
       release: 0.5,
       releaseCurve: "exponential",
       sustain: 1,
@@ -994,7 +1064,7 @@ function make_poly() {
       attack: 0.2,
       attackCurve: "linear",
       decay: 0.01,
-      decayCurve: "exponential",
+      decayCurve: "linear",
       release: 0.5,
       releaseCurve: "exponential",
       sustain: 1,
@@ -1007,7 +1077,7 @@ function make_poly() {
   let effect1, effect2, effect3;
 
   // make connections
-  instrument.connect(Tone.Destination);
+  instrument.connect(vol);
 
   // define deep dispose function
   function deep_dispose() {
@@ -1021,12 +1091,12 @@ function make_poly() {
     instrument: instrument,
     deep_dispose: deep_dispose,
   };
-}
+};
 
 
 function make_space_synth(){
   // create synth
-  let instrument = new Tone.PolySynth(Tone.FMSynth, 3);
+  let instrument = new Tone.PolySynth(Tone.AMSynth, 3);
   let synthJSON = {
     "volume": 0,
     "detune": 0,
@@ -1042,7 +1112,7 @@ function make_space_synth(){
       "attack": 0.01,
       "attackCurve": "linear",
       "decay": 0.2,
-      "decayCurve": "exponential",
+      "decayCurve": "linear",
       "release": 0.5,
       "releaseCurve": "exponential",
       "sustain": 1
@@ -1057,7 +1127,7 @@ function make_space_synth(){
       "attack": 0.2,
       "attackCurve": "linear",
       "decay": 0.01,
-      "decayCurve": "exponential",
+      "decayCurve": "linear",
       "release": 0.5,
       "releaseCurve": "exponential",
       "sustain": 1
@@ -1070,7 +1140,7 @@ function make_space_synth(){
   let effect1, effect2, effect3;
 
   // make connections
-  instrument.connect(Tone.Destination);
+  instrument.connect(vol);
 
   // define deep dispose function
   function deep_dispose() {
@@ -1084,4 +1154,4 @@ function make_space_synth(){
     instrument: instrument,
     deep_dispose: deep_dispose,
   };
-}
+};
