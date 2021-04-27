@@ -1,12 +1,5 @@
 //Kaleb Morgan
-//CSC 2463 - FINAL PROJECT
-//VIDEO DEMO: 
-//The game should still be playable with keyboard
-//even though full Arduino integration has been added.
-
-//Play online at https://cometdestroyer.makwd.us
-
-
+//CSC 2463
 //Final Project - Comet Destroyer
 //variable to keep track if clicked or not(Keyboard Mouse Version)
 var click = false;
@@ -66,7 +59,7 @@ var oldData;
 var introMusic, winMusic, synth1, synth2, overMusic,multiplayer,gameMusic,gameTime,vol,soundVols,overInstrument;
 
 function setup() {
-  createCanvas(1080, 520);
+  createCanvas(windowWidth - 10, windowHeight - 10);
   imageMode(CENTER);
 
   //volume control
@@ -241,7 +234,7 @@ function preload() {
   titleFont = loadFont("fonts/Blox2.ttf");
   //populate the stars in the star array
   for (var i = 0; i < starCount; i++) {
-    stars[i] = new Star(random(1080 - 1), random(520 - 1));
+    stars[i] = new Star(random(windowWidth - 1), random(windowHeight - 1));
   }
   //populate the comets in the comet array
   for (var j = 0; j < cometCount; j++) {
@@ -281,24 +274,68 @@ function draw() {
     fill(255);
     textFont(titleFont);
     textSize(90);
-    text("Comet Destroyer", 200, 200);
+    text("Comet Destroyer", windowWidth / 6, windowHeight / 3);
     textFont(normalFont);
     textSize(25);
-    text("Select your destroyer to play!", 325, 235);
+    text(
+      "Select your destroyer to play!",
+      windowWidth / 4 + 30,
+      windowHeight / 3 + 35
+    );
     //select spaceship images
-    image(spaceimage, 340, 290, 80, 80, 240, 0, 80, 80);
-    image(spaceimage, 430, 290, 80, 80, 160, 0, 80, 80);
-    image(spaceimage, 520, 290, 80, 80, 80, 0, 80, 80);
-    image(spaceimage, 610, 290, 80, 80, 0, 0, 80, 80);
+    image(
+      spaceimage,
+      windowWidth / 3 - 30,
+      windowHeight / 2 - 40,
+      80,
+      80,
+      240,
+      0,
+      80,
+      80
+    );
+    image(
+      spaceimage,
+      windowWidth / 3 + 60,
+      windowHeight / 2 - 40,
+      80,
+      80,
+      160,
+      0,
+      80,
+      80
+    );
+    image(
+      spaceimage,
+      windowWidth / 3 + 150,
+      windowHeight / 2 - 40,
+      80,
+      80,
+      80,
+      0,
+      80,
+      80
+    );
+    image(
+      spaceimage,
+      windowWidth / 3 + 240,
+      windowHeight / 2 - 40,
+      80,
+      80,
+      0,
+      0,
+      80,
+      80
+    );
     //info image
-    image(extrasImage, 50, 460, 80, 80, 80, 0, 80, 80);
+    image(extrasImage, 50, windowHeight - 60, 80, 80, 80, 0, 80, 80);
 
     //red ship
     if (
-      mouseX >= 300 &&
-      mouseX <= 380 &&
-      mouseY >= 250 &&
-      mouseY <= 330 &&
+      mouseX >= windowWidth / 3-65 &&
+      mouseX <= windowWidth / 3-65+80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80+75 &&
       click == true
     ) {
       playerShip = new Ship(spaceimage, 200, 260, "red");
@@ -306,10 +343,10 @@ function draw() {
     }
     //blue ship
     else if (
-      mouseX >= 390 &&
-      mouseX <= 470 &&
-      mouseY >= 250 &&
-      mouseY <= 330 &&
+      mouseX >= windowWidth / 3+23 &&
+      mouseX <= windowWidth / 3+23+80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80+75 &&
       click == true
     ) {
       playerShip = new Ship(spaceimage, 200, 260, "blue");
@@ -317,10 +354,10 @@ function draw() {
     }
     //purple ship
     else if (
-      mouseX >= 480 &&
-      mouseX <= 560 &&
-      mouseY >= 250 &&
-      mouseY <= 330 &&
+      mouseX >= windowWidth / 3+112 &&
+      mouseX <= windowWidth / 3+112+80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80+75 &&
       click == true
     ) {
       playerShip = new Ship(spaceimage, 200, 260, "purple");
@@ -328,10 +365,10 @@ function draw() {
     }
     //yellow ship
     else if (
-      mouseX >= 570 &&
-      mouseX <= 650 &&
-      mouseY >= 250 &&
-      mouseY <= 330 &&
+      mouseX >= windowWidth / 3+198 &&
+      mouseX <= windowWidth / 3+198+80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80+75 &&
       click == true
     ) {
       playerShip = new Ship(spaceimage, 200, 260, "yellow");
@@ -352,28 +389,28 @@ function draw() {
       noFill();
       strokeWeight(4);
       stroke(255);
-      rect(303, 250, 80, 75);
+      rect( windowWidth / 3-65,windowHeight / 2 - 80, 80, 75);
       noStroke();
       fill(255);
     } else if (shipSelected == 1) {
       noFill();
       strokeWeight(4);
       stroke(255);
-      rect(393, 250, 80, 75);
+      rect(windowWidth / 3+23,windowHeight / 2 - 80, 80, 75);
       noStroke();
       fill(255);
     } else if (shipSelected == 2) {
       noFill();
       strokeWeight(4);
       stroke(255);
-      rect(483, 250, 80, 75);
+      rect(windowWidth / 3+112,windowHeight / 2 - 80, 80, 75);
       noStroke();
       fill(255);
     } else if (shipSelected == 3) {
       noFill();
       strokeWeight(4);
       stroke(255);
-      rect(573, 250, 80, 75);
+      rect(windowWidth / 3+198,windowHeight / 2 - 80, 80, 75);
       noStroke();
       fill(255);
     } else if (shipSelected == -1) {
@@ -385,31 +422,31 @@ function draw() {
       fill(255);
     }
     if (
-      mouseX >= 303 &&
-      mouseX <= 303 + 80 &&
-      mouseY >= 250 &&
-      mouseY <= 250 + 75
+      mouseX >= windowWidth / 3-65 &&
+      mouseX <= windowWidth / 3-65 + 80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80 + 75
     ) {
       shipSelected = 0;
     } else if (
-      mouseX >= 393 &&
-      mouseX <= 393 + 80 &&
-      mouseY >= 250 &&
-      mouseY <= 250 + 75
+      mouseX >= windowWidth / 3+23 &&
+      mouseX <= windowWidth / 3+23 + 80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80 + 75
     ) {
       shipSelected = 1;
     } else if (
-      mouseX >= 483 &&
-      mouseX <= 483 + 80 &&
-      mouseY >= 250 &&
-      mouseY <= 250 + 75
+      mouseX >= windowWidth / 3+112 &&
+      mouseX <= windowWidth / 3+112 + 80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80 + 75
     ) {
       shipSelected = 2;
     } else if (
-      mouseX >= 573 &&
-      mouseX <= 573 + 80 &&
-      mouseY >= 250 &&
-      mouseY <= 250 + 75
+      mouseX >= windowWidth / 3+198 &&
+      mouseX <= windowWidth / 3+198 + 80 &&
+      mouseY >= windowHeight / 2 - 80 &&
+      mouseY <= windowHeight / 2 - 80 + 75
     ) {
       shipSelected = 3;
     }
@@ -471,7 +508,7 @@ function draw() {
     fill(255);
     textFont(normalFont);
     textSize(30);
-    text("SCORE: " + score, 920, 50);
+    text("SCORE: " + score, windowWidth - 180, 50);
 
     if (score == 35) {
       cometSpeed = 5;
@@ -526,11 +563,11 @@ function draw() {
     fill(255);
     textFont(titleFont);
     textSize(90);
-    text("GAME OVER", 240, 200);
+    text("GAME OVER", windowWidth / 6, windowHeight / 3);
     textFont(normalFont);
     textSize(25);
-    text("YOUR SCORE WAS: " + score, 325, 235);
-    text("REFRESH TO PLAY AGAIN", 325, 335);
+    text("YOUR SCORE WAS: " + score, windowWidth / 6+50, windowHeight / 3+40);
+    text("REFRESH TO PLAY AGAIN", windowWidth / 6+35, windowHeight / 3+180);
   }
 
   //GAME INFORMATION SCREEN ---------------------------------
@@ -622,8 +659,8 @@ function Star(x, y) {
 
   this.draw = function () {
     if (this.x < 0) {
-      this.x = 1080;
-      this.y = random(520 - 1);
+      this.x = windowWidth;
+      this.y = random(windowHeight - 1);
     }
     this.x = this.x - starSpeed;
     rect(this.x, this.y, 5, 5);
@@ -674,8 +711,8 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
         if (this.timeRemaining == 0) {
           comets[this.index] = new Comet(
             "cometInfoSprites.png",
-            round(random(1500, 1800)),
-            round(random(520 - 1)),
+            round(random(windowWidth + 500, windowWidth + 800)),
+            round(random(windowHeight - 1)),
             false,
             false,
             this.index
@@ -690,8 +727,8 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
     } else if(this.isHeart && this.isCaught){
         comets[this.index] = new Comet(
           "cometInfoSprites.png",
-          round(random(1500, 1800)),
-          round(random(520 - 1)),
+          round(random(windowWidth + 500, windowWidth + 800)),
+          round(random(windowHeight - 1)),
           false,
           false,
           this.index
@@ -704,8 +741,8 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
       if (randomVal < 800) {
         comets[this.index] = new Comet(
           "cometInfoSprites.png",
-          round(random(1500, 1800)),
-          round(random(520 - 1)),
+          round(random(windowWidth + 500, windowHeight + 800)),
+          round(random(windowHeight - 1)),
           false,
           false,
           this.index
@@ -713,8 +750,8 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
       } else if (randomVal > 799 && randomVal < 950) {
         comets[this.index] = new Comet(
           "cometInfoSprites.png",
-          round(random(1500, 1800)),
-          round(random(520 - 1)),
+          round(random(windowWidth + 500, windowHeight + 800)),
+          round(random(windowHeight - 1)),
           true,
           false,
           this.index
@@ -722,8 +759,8 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
       } else {
         comets[this.index] = new Comet(
           "cometInfoSprites.png",
-          round(random(1500, 1800)),
-          round(random(520 - 1)),
+          round(random(windowWidth + 500, windowHeight + 800)),
+          round(random(windowHeight - 1)),
           false,
           true,
           this.index
@@ -813,7 +850,7 @@ function Ship(imageName, x, y, color) {
       }
     } else if (direction == "down") {
       console.log("down");
-      if (this.y < 480) {
+      if (this.y < windowHeight - 40) {
         this.yMove = 1;
       }
     } else if (direction == "left") {
@@ -858,7 +895,7 @@ function Ship(imageName, x, y, color) {
     }
     textFont(normalFont);
     textSize(30);
-    text("Health: " + this.health, 900, 500);
+    text("Health: " + this.health, windowWidth - 200, windowHeight - 40);
   };
   this.drawLaser = function () {
     for (j = 0; j < lasersCount; j++) {
@@ -923,7 +960,7 @@ function Laser(x, y) {
   this.hit = false;
 
   this.draw = function () {
-    if (this.x < 1080 && !this.hit) {
+    if (this.x < windowWidth && !this.hit) {
       push();
       translate(this.x, this.y - 10);
       image(this.laser, 0, 0, 80, 80, 0, 0, 80, 80);
