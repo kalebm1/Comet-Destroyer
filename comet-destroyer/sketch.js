@@ -699,7 +699,7 @@ function Comet(imageName, x, y, isSuper, isHeart, index) {
     }
 
     if (this.x < -30) {
-      console.log("restart");
+      //console.log("restart");
       let randomVal = round(random(1, 1000));
       if (randomVal < 800) {
         comets[this.index] = new Comet(
@@ -794,7 +794,7 @@ function Ship(imageName, x, y, color) {
         image(this.spritesheet, 0, 0, 80, 80, 0, 0, 80, 80);
       }
     } else {
-      console.log("DEAD");
+      //console.log("DEAD");
       image(this.laser, 0, 0, 80, 80, 160, 0, 80, 80);
       gameState = 3;
     }
@@ -807,22 +807,22 @@ function Ship(imageName, x, y, color) {
 
   this.move = function (direction) {
     if (direction == "up") {
-      console.log("up");
+      //console.log("up");
       if (this.y > 40) {
         this.yMove = -1;
       }
     } else if (direction == "down") {
-      console.log("down");
+      //console.log("down");
       if (this.y < 480) {
         this.yMove = 1;
       }
     } else if (direction == "left") {
-      console.log("left");
+      //console.log("left");
       if (this.x > 40) {
         this.xMove = -1;
       }
     } else if (direction == "right") {
-      console.log("right");
+      //console.log("right");
       if (this.y < 520) {
         this.xMove = 1;
       }
@@ -887,7 +887,7 @@ function Ship(imageName, x, y, color) {
             this.y < cy - 20 &&
             this.y - 40 > cy)
         ) {
-          console.log(comets[c].getHealth());
+          //console.log(comets[c].getHealth());
           if (comets[c].getHealth()) {
             //check health
             if (this.health < 100&&!(comets[c].isCaught())) {
@@ -900,7 +900,7 @@ function Ship(imageName, x, y, color) {
             multiplayer.player("explosion").start();
             this.health = 0;
           } else {
-            console.log(this.health);
+            //console.log(this.health);
             if (this.health > 0) {
               multiplayer.player("shiphit").start();
               this.health = this.health - 20;
@@ -954,7 +954,7 @@ function Laser(x, y) {
           score++;
         }
         comets[c].makeDie();
-        console.log(this.v);
+        //console.log(this.v);
       }
     }
   };
