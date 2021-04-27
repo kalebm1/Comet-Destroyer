@@ -1,11 +1,11 @@
 //Kaleb Morgan
 //CSC 2463 - FINAL PROJECT
-//VIDEO DEMO: 
+//VIDEO DEMO: https://youtu.be/ywq5B5dRSvs
+
 //The game should still be playable with keyboard
 //even though full Arduino integration has been added.
 
 //Play online at https://cometdestroyer.makwd.us
-
 
 //Final Project - Comet Destroyer
 //variable to keep track if clicked or not(Keyboard Mouse Version)
