@@ -2,6 +2,8 @@
 //CSC 2463 - FINAL PROJECT
 //VIDEO DEMO: https://youtu.be/ywq5B5dRSvs
 
+
+
 //The game should still be playable with keyboard
 //even though full Arduino integration has been added.
 
@@ -69,6 +71,8 @@ var notSent = true;
 var drawn = false;
 var playername = " ";
 var input;
+var notGot = true;
+var leaderboarddata;
 
 function setup() {
   createCanvas(1080, 520);
@@ -541,6 +545,9 @@ function draw() {
     text("YOUR SCORE WAS: " + score, 325, 235);
     text("REFRESH TO PLAY AGAIN", 325, 335);
     text("Get on the leaderboard!", 325,360);
+    text("Leaderboard: ",700, 100);
+    getTop10Players();
+    drawLeaderBoard();
   }
 
   //GAME INFORMATION SCREEN ---------------------------------
@@ -583,12 +590,60 @@ function sendScore(){
   if(notSent){
     const data = {playername, score}
     notSent = false;
-    httpPost('/api','text',data,function(result){
+    httpPost('/api','json',data,function(result){
       console.log('I got a request!')
       console.log(result);
     },function(error){
       console.log(error);
     });
+    notGot = true;
+  }
+}
+
+function getTop10Players(){
+  if(notGot){
+    notGot = false;
+    httpGet('/api','json',false,function(response){
+      leaderboarddata = response;
+    });
+  }
+}
+
+function drawLeaderBoard(){
+  for(item in leaderboarddata){
+    let name = leaderboarddata[item].playername.slice(0,9);
+    let score = leaderboarddata[item].score;
+    if(item==0){
+      text(name,700, 150);
+      text(score,900,150);
+    }else if(item==1){
+      text(name,700, 180);
+      text(score,900,180);
+    }else if(item==2){
+      text(name,700, 210);
+      text(score,900,210);
+    }else if(item==3){
+      text(name,700, 240);
+      text(score,900,240);
+    }else if(item==4){
+      text(name,700, 270);
+      text(score,900,270);
+    }else if(item==5){
+      text(name,700, 300);
+      text(score,900,300);
+    }else if(item==6){
+      text(name,700, 330);
+      text(score,900,330);
+    }else if(item==7){
+      text(name,700, 360);
+      text(score,900,360);
+    }else if(item==8){
+      text(name,700, 390);
+      text(score,900,390);
+    }else if(item==9){
+      text(name,700, 420);
+      text(score,900,420);
+    }
   }
 }
 

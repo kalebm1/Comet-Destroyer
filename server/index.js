@@ -24,3 +24,13 @@ app.post('/api', (request, response )=> {
         timestamp: timestamp,
     });
 });
+
+app.get('/api',(request,response) => {
+    database.find({}).sort({score:-1}).limit(10).exec((err,data)=>{
+        if(err){
+            console.log(err);
+            return;
+        }
+        response.json(data);
+    });
+});
