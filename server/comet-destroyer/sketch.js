@@ -545,7 +545,6 @@ function draw() {
     text("YOUR SCORE WAS: " + score, 325, 235);
     text("REFRESH TO PLAY AGAIN", 325, 335);
     text("Get on the leaderboard!", 325,360);
-    text("Leaderboard: ",700, 100);
     getTop10Players();
     drawLeaderBoard();
   }
@@ -610,6 +609,13 @@ function getTop10Players(){
 }
 
 function drawLeaderBoard(){
+  push();
+  fill(0);
+  strokeWeight(4);
+  stroke(255,204,0);
+  rect(680,70,280,370);
+  pop();
+  text("Leaderboard: ",700, 100);
   for(item in leaderboarddata){
     let name = leaderboarddata[item].playername.slice(0,9);
     let score = leaderboarddata[item].score;
