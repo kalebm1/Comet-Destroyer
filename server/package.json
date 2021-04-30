@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This is the comet destroyer app by Kaleb Morgan",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalebm1/Comet-Destroyer.git"
+  },
+  "keywords": [
+    "comet",
+    "destroyer",
+    "browser",
+    "game"
+  ],
+  "author": "Kaleb Morgan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kalebm1/Comet-Destroyer/issues"
+  },
+  "homepage": "https://github.com/kalebm1/Comet-Destroyer#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nedb": "^1.8.0"
+  }
+}
